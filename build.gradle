@@ -35,6 +35,14 @@ dependencies {
             "io.epirus:epirus-web3j:$web3jEpirusVersion"
     implementation("org.web3j:web3j-unit:$web3jVersion")
     implementation("org.web3j:web3j-evm:$web3jVersion")
+
+    implementation("org.bitcoinj:bitcoinj-core:0.15.8")
+    compile 'org.jsoup:jsoup:1.13.1'
+
+//    compile 'io.github.novacrypto:BIP39:2019.01.27'
+
+
+
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"

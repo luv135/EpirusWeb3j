@@ -1,22 +1,14 @@
 package io.luowei.epirus
 
 import org.web3j.crypto.Bip32ECKeyPair
-import org.web3j.crypto.Bip44WalletUtils
 import org.web3j.crypto.Credentials
 import org.web3j.crypto.MnemonicUtils
+import org.web3j.protocol.Web3j
+import org.web3j.protocol.core.DefaultBlockParameterName
+import org.web3j.protocol.http.HttpService
+import org.web3j.tx.Transfer
+import org.web3j.utils.Convert
 
-/*
-//根据Path    m/44'/60'/0'/0 加载私钥和地址 采用coinomi，ledger格式
-    public static Credentials loadBip44Wallet(String mnemonic, int index) {
-        byte[] seed = MnemonicUtils.generateSeed(mnemonic, "");
-        Bip32ECKeyPair masterKeypair = Bip32ECKeyPair.generateKeyPair(seed);
-        final int[] path = {44 | Bip32ECKeyPair.HARDENED_BIT, 60 | Bip32ECKeyPair.HARDENED_BIT, 0 | Bip32ECKeyPair.HARDENED_BIT, index};
-        Bip32ECKeyPair bip44Keypair = Bip32ECKeyPair.deriveKeyPair(masterKeypair, path);
-        Credentials credentials = Credentials.create(bip44Keypair);
-        printCredentials(credentials);
-        return credentials;
-    }
-* */
 class WalletTest {
     companion object {
         @JvmStatic
@@ -30,8 +22,7 @@ class WalletTest {
 //            val dir = File("walletDir").apply { mkdir() }
 //            val wallet = WalletUtils.generateBip39Wallet("123456", dir)
 //            println("mem = ${wallet.mnemonic}")
-            WalletTest().createWallet();
-
+            WalletTest().initWeb3();
         }
     }
 
@@ -49,7 +40,7 @@ class WalletTest {
         val masterKeyPair = Bip32ECKeyPair.generateKeyPair(seed)
 
         // m/44'/60'/0'/0/0
-        val path = intArrayOf(44 or Bip32ECKeyPair.HARDENED_BIT, 60 or Bip32ECKeyPair.HARDENED_BIT, 0 or Bip32ECKeyPair.HARDENED_BIT, 0 ,0)
+        val path = intArrayOf(44 or Bip32ECKeyPair.HARDENED_BIT, 60 or Bip32ECKeyPair.HARDENED_BIT, 0 or Bip32ECKeyPair.HARDENED_BIT, 0, 0)
         val bip44KeyPair = Bip32ECKeyPair.deriveKeyPair(masterKeyPair, path)
 //        val bip44KeyPair = Bip44WalletUtils.generateBip44KeyPair(masterKeyPair, false)
         val credentials = Credentials.create(bip44KeyPair)
@@ -57,6 +48,25 @@ class WalletTest {
         //0x9052549e68d4315b44dc16fe02b560ce87d7062f
 //        0x1b5b507486620341dd178d9fd95a8c0887c1313b
 //        0x1B5B507486620341dD178D9FD95a8C0887c1313b
-
     }
+
+    var rinkeby = "https://rinkeby.infura.io/v3/ac8fee58ba2744288c3c2199aec75684"
+
+    // eth 钱包私钥 rinkeyby
+// "0X8a7d41b5d26125017dbb5fd9b0c1159deb426e176b0647f5ec4bdf05ca22d234";
+// 地址
+// 0x1CA1b57E4e624536e3915A1824a93c70dF978585
+    private fun initWeb3() {
+        val web3j = Web3j.build(HttpService(rinkeby))
+        val credentials = Credentials.create("0x8a7d41b5d26125017dbb5fd9b0c1159deb426e176b0647f5ec4bdf05ca22d234")
+//        println("address = ${credentials.address}")
+        val balance = Convert.fromWei(
+                web3j.ethGetBalance(credentials.address, DefaultBlockParameterName.LATEST)
+                        .send().balance.toBigDecimal(),
+                Convert.Unit.ETHER)
+        println("balance = $balance")
+//        Transfer.sendFunds(web3j)
+    }
+
+
 }
